@@ -12,6 +12,7 @@
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="due_date">Due Date</string>
+    <string name="reminder_time">Reminder Time</string>
     <string name="priority">Priority</string>
     <string name="priority_low">Low</string>
     <string name="priority_medium">Medium</string>

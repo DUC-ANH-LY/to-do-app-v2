@@ -14,6 +14,8 @@ public class Todo {
     private Date createdAt;
     private Date dueDate;
     private int priority; // 1: Low, 2: Medium, 3: High
+    private boolean hasReminder;
+    private Date reminderTime;
 
     public Todo(String title, String description, Date dueDate, int priority) {
         this.title = title;
@@ -22,6 +24,8 @@ public class Todo {
         this.createdAt = new Date();
         this.dueDate = dueDate;
         this.priority = priority;
+        this.hasReminder = false;
+        this.reminderTime = null;
     }
 
     // Getters and Setters
@@ -45,4 +49,10 @@ public class Todo {
     
     public int getPriority() { return priority; }
     public void setPriority(int priority) { this.priority = priority; }
+    
+    public boolean hasReminder() { return hasReminder; }
+    public void setHasReminder(boolean hasReminder) { this.hasReminder = hasReminder; }
+    
+    public Date getReminderTime() { return reminderTime; }
+    public void setReminderTime(Date reminderTime) { this.reminderTime = reminderTime; }
 } 

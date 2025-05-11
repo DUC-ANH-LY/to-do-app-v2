@@ -1,6 +1,7 @@
 package com.example.todoappv2;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.todoappv2.model.Category;
 import com.example.todoappv2.model.Todo;
+import com.example.todoappv2.util.ReminderManager;
 import com.example.todoappv2.viewmodel.TodoViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.chip.Chip;
@@ -22,16 +24,20 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class AddTodoActivity extends AppCompatActivity {
     private TextInputEditText editTextTitle;
     private TextInputEditText editTextDescription;
     private TextInputEditText editTextDueDate;
+    private TextInputEditText editTextReminderTime;
     private AutoCompleteTextView spinnerPriority;
     private AutoCompleteTextView spinnerCategories;
     private ChipGroup chipGroupCategories;
     private TodoViewModel todoViewModel;
     private Calendar calendar;
+    private Calendar reminderCalendar;
     private List<Category> selectedCategories = new ArrayList<>();
     private List<String> categoryNames = new ArrayList<>();
 
@@ -50,6 +56,7 @@ public class AddTodoActivity extends AppCompatActivity {
         editTextTitle = findViewById(R.id.edit_text_title);
         editTextDescription = findViewById(R.id.edit_text_description);
         editTextDueDate = findViewById(R.id.edit_text_due_date);
+        editTextReminderTime = findViewById(R.id.edit_text_reminder_time);
         spinnerPriority = findViewById(R.id.spinner_priority);
         spinnerCategories = findViewById(R.id.spinner_categories);
         chipGroupCategories = findViewById(R.id.chip_group_categories);
@@ -62,9 +69,13 @@ public class AddTodoActivity extends AppCompatActivity {
 
         // Initialize calendar
         calendar = Calendar.getInstance();
+        reminderCalendar = Calendar.getInstance();
 
         // Set up due date picker
         editTextDueDate.setOnClickListener(v -> showDatePicker());
+
+        // Set up reminder time picker
+        editTextReminderTime.setOnClickListener(v -> showReminderTimePicker());
 
         // Initialize ViewModel
         todoViewModel = new ViewModelProvider(this).get(TodoViewModel.class);
@@ -139,10 +150,31 @@ public class AddTodoActivity extends AppCompatActivity {
         editTextDueDate.setText(date);
     }
 
+    private void showReminderTimePicker() {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+            this,
+            (view, hourOfDay, minute) -> {
+                reminderCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                reminderCalendar.set(Calendar.MINUTE, minute);
+                updateReminderTimeField();
+            },
+            reminderCalendar.get(Calendar.HOUR_OF_DAY),
+            reminderCalendar.get(Calendar.MINUTE),
+            true
+        );
+        timePickerDialog.show();
+    }
+
+    private void updateReminderTimeField() {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        editTextReminderTime.setText(timeFormat.format(reminderCalendar.getTime()));
+    }
+
     private void saveTodo() {
         String title = editTextTitle.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
         String dueDateStr = editTextDueDate.getText().toString().trim();
+        String reminderTimeStr = editTextReminderTime.getText().toString().trim();
         String priorityStr = spinnerPriority.getText().toString();
 
         if (title.isEmpty()) {
@@ -178,8 +210,20 @@ public class AddTodoActivity extends AppCompatActivity {
         // Create Todo object
         Todo todo = new Todo(title, description, calendar.getTime(), priority);
 
+        // Set reminder if time is provided
+        if (!reminderTimeStr.isEmpty()) {
+            todo.setHasReminder(true);
+            todo.setReminderTime(reminderCalendar.getTime());
+        }
+
         // Insert todo with categories
         todoViewModel.insert(todo, selectedCategories);
+
+        // Schedule reminder if set
+        if (todo.hasReminder()) {
+            ReminderManager.scheduleReminder(this, todo);
+        }
+
         finish();
     }
 

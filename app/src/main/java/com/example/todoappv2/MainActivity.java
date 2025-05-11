@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.todoappv2.adapter.TodoAdapter;
 import com.example.todoappv2.model.Todo;
 import com.example.todoappv2.model.TodoWithCategories;
+import com.example.todoappv2.util.NotificationHelper;
 import com.example.todoappv2.viewmodel.TodoViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -34,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Create notification channel
+        NotificationHelper.createNotificationChannel(this);
 
         // Initialize ViewModel first
         todoViewModel = new ViewModelProvider(this).get(TodoViewModel.class);
@@ -81,6 +85,10 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(EditTodoActivity.EXTRA_DUE_DATE, todo.getDueDate().getTime());
             intent.putExtra(EditTodoActivity.EXTRA_PRIORITY, todo.getPriority());
             intent.putExtra(EditTodoActivity.EXTRA_COMPLETED, todo.isCompleted());
+            intent.putExtra(EditTodoActivity.EXTRA_HAS_REMINDER, todo.hasReminder());
+            if (todo.getReminderTime() != null) {
+                intent.putExtra(EditTodoActivity.EXTRA_REMINDER_TIME, todo.getReminderTime().getTime());
+            }
             startActivity(intent);
         });
 
