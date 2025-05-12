@@ -1,128 +1,65 @@
-# TodoAppV2
+# To Do App v2
 
-A modern Android application for managing tasks and categories, built with Material Design principles and following MVVM architecture.
+A modern Android To-Do application with advanced productivity features, built using Room, LiveData, and Material Design.
 
 ## Features
 
 - **Task Management**
-  - Create, edit, and delete tasks
-  - Mark tasks as complete/incomplete
-  - Set task priorities (Low, Medium, High)
-  - Add due dates to tasks
-  - Add descriptions to tasks
+  - Add, edit, and delete tasks with title, description, due date, priority, and categories.
+  - Mark tasks as completed or active.
+  - Bulk delete all tasks.
 
 - **Category Management**
-  - Create and manage custom categories
-  - Assign multiple categories to tasks
-  - View tasks by category
+  - Create, edit, and delete custom categories.
+  - Assign multiple categories to each task.
 
-- **Task Organization**
-  - View all tasks
-  - Filter tasks by status (Active/Completed)
-  - Sort tasks by priority and due date
-  - Search functionality
+- **Reminders**
+  - Set reminders for tasks with notification support.
+  - Reminders persist across device reboots.
 
-- **Modern UI/UX**
-  - Material Design components
-  - Bottom navigation for easy access
-  - Floating Action Button for quick task creation
-  - Intuitive category selection with chips
-  - Responsive layout
+- **Focus Mode**
+  - Set a focus timer for deep work sessions.
+  - Animated countdown timer with sound notification on completion.
+  - Overview of daily social app usage (YouTube, Gmail, Facebook, etc.), aggregated and visualized.
 
-## Technical Details
+- **Advanced Filtering**
+  - Filter tasks by title, description, due date, priority, reminder time, and category.
+  - Flexible filter dialog for easy multi-criteria search.
 
-### Architecture
-- MVVM (Model-View-ViewModel) architecture
-- Room Database for local storage
-- LiveData for reactive UI updates
-- ViewModel for managing UI-related data
+- **Visual Priority Indicators**
+  - Each task displays a colored bar: green (Low), amber (Medium), red (High) for quick priority recognition.
 
-### Key Components
-- **Activities**
-  - MainActivity: Main task list and navigation
-  - AddTodoActivity: Create new tasks
-  - EditTodoActivity: Modify existing tasks
-  - CategoryManagementActivity: Manage categories
+- **Material Design**
+  - Clean, modern UI with Material Components and smooth user experience.
 
-- **Adapters**
-  - TodoAdapter: Handles task list display
-  - CategoryAdapter: Manages category list display
+## Setup Instructions
 
-- **Models**
-  - Todo: Task entity
-  - Category: Category entity
-  - TodoWithCategories: Relationship entity
+1. **Clone the repository**
+   ```sh
+   git clone <repo-url>
+   cd ToDoAppv2
+   ```
+2. **Open in Android Studio**
+   - Open the project folder in Android Studio.
+   - Let Gradle sync and download dependencies.
+3. **Configure Google Services (optional)**
+   - If using Firebase features, add your `google-services.json` to `app/`.
+4. **Build and Run**
+   - Connect your device or start an emulator.
+   - Click Run (▶️) in Android Studio.
 
-### Dependencies
-- AndroidX Core Libraries
-- Material Design Components
-- Room Database
-- ViewModel and LiveData
-- RecyclerView
-- CardView
+## Code Structure
+- `app/src/main/java/com/example/todoappv2/` — Main activities and logic
+- `app/src/main/java/com/example/todoappv2/adapter/` — RecyclerView adapters
+- `app/src/main/java/com/example/todoappv2/model/` — Data models (Todo, Category, etc.)
+- `app/src/main/java/com/example/todoappv2/dao/` — Room DAOs
+- `app/src/main/java/com/example/todoappv2/repository/` — Data repositories
+- `app/src/main/java/com/example/todoappv2/viewmodel/` — ViewModels
+- `app/src/main/res/layout/` — XML layouts
+- `app/src/main/res/values/` — Colors, strings, styles
 
-## Getting Started
-
-### Prerequisites
-- Android Studio Arctic Fox or newer
-- Android SDK 21 or higher
-- Gradle 7.0 or higher
-
-### Installation
-1. Clone the repository
-```bash
-git clone https://github.com/yourusername/TodoAppV2.git
-```
-
-2. Open the project in Android Studio
-
-3. Build and run the application
-
-## Usage
-
-### Creating a Task
-1. Tap the Floating Action Button (+)
-2. Enter task details:
-   - Title (required)
-   - Description (optional)
-   - Due date
-   - Priority level
-   - Categories
-3. Tap "Save"
-
-### Managing Categories
-1. Navigate to Categories using bottom navigation
-2. Use the + button to add new categories
-3. Tap on a category to edit
-4. Use the delete button to remove categories
-
-### Filtering Tasks
-- Use the bottom navigation to switch between:
-  - All tasks
-  - Active tasks
-  - Completed tasks
-
-### Completing Tasks
-- Tap the checkbox next to a task to mark it as complete/incomplete
-
-### Deleting Tasks
-- Tap the delete icon on a task to remove it
-- Use the menu option to delete all tasks
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+## Screenshots
+_Add screenshots here to showcase the UI and features._
 
 ## License
-
-This project is licensed under the MIT License - see the LICENSE file for details
-
-## Acknowledgments
-
-- Material Design Guidelines
-- Android Jetpack Components
-- Room Database Documentation
+MIT or specify your license here.
