@@ -5,4 +5,9 @@
         android:id="@+id/action_delete_all"
         android:title="@string/delete_all"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_filter"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Filter"
+        app:showAsAction="ifRoom"/>
 </menu> 

@@ -11,6 +11,8 @@ import com.example.todoappv2.model.TodoWithCategories;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import androidx.sqlite.db.SimpleSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 public class TodoRepository {
     private TodoDao todoDao;
@@ -104,5 +106,130 @@ public class TodoRepository {
 
     public LiveData<TodoWithCategories> getTodoWithCategories(int id) {
         return todoDao.getTodoWithCategories(id);
+    }
+
+    public LiveData<List<Todo>> filterTodos(
+            String title,
+            String description,
+            Integer priority,
+            Long dueDateFrom,
+            Long dueDateTo,
+            Boolean hasReminder,
+            Long reminderTimeFrom,
+            Long reminderTimeTo,
+            String categoryName // can be null
+    ) {
+        StringBuilder query = new StringBuilder();
+        List<Object> args = new java.util.ArrayList<>();
+        query.append("SELECT t.* FROM todos t");
+
+        if (categoryName != null && !categoryName.isEmpty()) {
+            query.append(" INNER JOIN todo_category_cross_ref c ON t.id = c.todoId ");
+            query.append(" INNER JOIN category_table cat ON c.categoryId = cat.id ");
+        }
+
+        query.append(" WHERE 1=1 ");
+
+        if (title != null && !title.isEmpty()) {
+            query.append(" AND t.title LIKE ? ");
+            args.add("%" + title + "%");
+        }
+        if (description != null && !description.isEmpty()) {
+            query.append(" AND t.description LIKE ? ");
+            args.add("%" + description + "%");
+        }
+        if (priority != null) {
+            query.append(" AND t.priority = ? ");
+            args.add(priority);
+        }
+        if (dueDateFrom != null) {
+            query.append(" AND t.dueDate >= ? ");
+            args.add(dueDateFrom);
+        }
+        if (dueDateTo != null) {
+            query.append(" AND t.dueDate <= ? ");
+            args.add(dueDateTo);
+        }
+        if (hasReminder != null) {
+            query.append(" AND t.hasReminder = ? ");
+            args.add(hasReminder ? 1 : 0);
+        }
+        if (reminderTimeFrom != null) {
+            query.append(" AND t.reminderTime >= ? ");
+            args.add(reminderTimeFrom);
+        }
+        if (reminderTimeTo != null) {
+            query.append(" AND t.reminderTime <= ? ");
+            args.add(reminderTimeTo);
+        }
+        if (categoryName != null && !categoryName.isEmpty()) {
+            query.append(" AND cat.name = ? ");
+            args.add(categoryName);
+        }
+
+        query.append(" ORDER BY t.dueDate ASC");
+
+        SupportSQLiteQuery sqLiteQuery = new SimpleSQLiteQuery(query.toString(), args.toArray());
+        return todoDao.filterTodos(sqLiteQuery);
+    }
+
+    public LiveData<List<TodoWithCategories>> filterTodosWithCategories(
+            String title,
+            String description,
+            Integer priority,
+            Long dueDateFrom,
+            Long dueDateTo,
+            Boolean hasReminder,
+            Long reminderTimeFrom,
+            Long reminderTimeTo,
+            String categoryName // can be null
+    ) {
+        StringBuilder query = new StringBuilder();
+        List<Object> args = new java.util.ArrayList<>();
+        query.append("SELECT t.* FROM todos t");
+        if (categoryName != null && !categoryName.isEmpty()) {
+            query.append(" INNER JOIN todo_category_cross_ref c ON t.id = c.todoId ");
+            query.append(" INNER JOIN category_table cat ON c.categoryId = cat.id ");
+        }
+        query.append(" WHERE 1=1 ");
+        if (title != null && !title.isEmpty()) {
+            query.append(" AND t.title LIKE ? ");
+            args.add("%" + title + "%");
+        }
+        if (description != null && !description.isEmpty()) {
+            query.append(" AND t.description LIKE ? ");
+            args.add("%" + description + "%");
+        }
+        if (priority != null) {
+            query.append(" AND t.priority = ? ");
+            args.add(priority);
+        }
+        if (dueDateFrom != null) {
+            query.append(" AND t.dueDate >= ? ");
+            args.add(dueDateFrom);
+        }
+        if (dueDateTo != null) {
+            query.append(" AND t.dueDate <= ? ");
+            args.add(dueDateTo);
+        }
+        if (hasReminder != null) {
+            query.append(" AND t.hasReminder = ? ");
+            args.add(hasReminder ? 1 : 0);
+        }
+        if (reminderTimeFrom != null) {
+            query.append(" AND t.reminderTime >= ? ");
+            args.add(reminderTimeFrom);
+        }
+        if (reminderTimeTo != null) {
+            query.append(" AND t.reminderTime <= ? ");
+            args.add(reminderTimeTo);
+        }
+        if (categoryName != null && !categoryName.isEmpty()) {
+            query.append(" AND cat.name = ? ");
+            args.add(categoryName);
+        }
+        query.append(" ORDER BY t.dueDate ASC");
+        SupportSQLiteQuery sqLiteQuery = new SimpleSQLiteQuery(query.toString(), args.toArray());
+        return todoDao.filterTodosWithCategories(sqLiteQuery);
     }
 } 

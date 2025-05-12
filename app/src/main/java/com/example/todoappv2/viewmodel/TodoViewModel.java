@@ -3,6 +3,8 @@ package com.example.todoappv2.viewmodel;
 import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 import com.example.todoappv2.model.Category;
 import com.example.todoappv2.model.Todo;
 import com.example.todoappv2.model.TodoWithCategories;
@@ -17,6 +19,7 @@ public class TodoViewModel extends AndroidViewModel {
     private LiveData<List<TodoWithCategories>> activeTodos;
     private LiveData<List<TodoWithCategories>> completedTodos;
     private LiveData<List<Category>> allCategories;
+    private MutableLiveData<LiveData<List<TodoWithCategories>>> filteredTodos = new MutableLiveData<>();
 
     public TodoViewModel(Application application) {
         super(application);
@@ -78,5 +81,25 @@ public class TodoViewModel extends AndroidViewModel {
 
     public LiveData<TodoWithCategories> getTodoWithCategories(int id) {
         return todoRepository.getTodoWithCategories(id);
+    }
+
+    public LiveData<List<TodoWithCategories>> getFilteredTodos() {
+        return Transformations.switchMap(filteredTodos, data -> data);
+    }
+
+    public void filterTodos(
+            String title,
+            String description,
+            Integer priority,
+            Long dueDateFrom,
+            Long dueDateTo,
+            Boolean hasReminder,
+            Long reminderTimeFrom,
+            Long reminderTimeTo,
+            String categoryName
+    ) {
+        filteredTodos.setValue(todoRepository.filterTodosWithCategories(
+                title, description, priority, dueDateFrom, dueDateTo, hasReminder, reminderTimeFrom, reminderTimeTo, categoryName
+        ));
     }
 } 

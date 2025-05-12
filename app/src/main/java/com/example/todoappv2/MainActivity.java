@@ -18,13 +18,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.todoappv2.adapter.TodoAdapter;
 import com.example.todoappv2.model.Todo;
 import com.example.todoappv2.model.TodoWithCategories;
+import com.example.todoappv2.model.Category;
 import com.example.todoappv2.util.NotificationHelper;
 import com.example.todoappv2.viewmodel.TodoViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
+import android.widget.ArrayAdapter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private TodoViewModel todoViewModel;
@@ -111,6 +123,13 @@ public class MainActivity extends AppCompatActivity {
             allTodos = todos;
             filterTodos();
         });
+
+        // Observe filtered todos and update adapter
+        todoViewModel.getFilteredTodos().observe(this, todos -> {
+            if (todos != null) {
+                adapter.submitList(todos);
+            }
+        });
     }
 
     private void showDeleteConfirmationDialog(TodoWithCategories todoWithCategories) {
@@ -150,6 +169,10 @@ public class MainActivity extends AppCompatActivity {
             showDeleteAllConfirmationDialog();
             return true;
         }
+        if (item.getItemId() == R.id.action_filter) {
+            showFilterDialog();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -163,5 +186,108 @@ public class MainActivity extends AppCompatActivity {
             })
             .setNegativeButton(R.string.cancel, null)
             .show();
+    }
+
+    private void showFilterDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_filter, null);
+        EditText editTextTitle = dialogView.findViewById(R.id.editTextTitle);
+        EditText editTextDescription = dialogView.findViewById(R.id.editTextDescription);
+        AutoCompleteTextView spinnerPriority = dialogView.findViewById(R.id.spinnerPriority);
+        EditText editTextDueDateFrom = dialogView.findViewById(R.id.editTextDueDateFrom);
+        EditText editTextDueDateTo = dialogView.findViewById(R.id.editTextDueDateTo);
+        CheckBox checkBoxHasReminder = dialogView.findViewById(R.id.checkBoxHasReminder);
+        EditText editTextReminderTimeFrom = dialogView.findViewById(R.id.editTextReminderTimeFrom);
+        EditText editTextReminderTimeTo = dialogView.findViewById(R.id.editTextReminderTimeTo);
+        AutoCompleteTextView spinnerCategory = dialogView.findViewById(R.id.spinnerCategory);
+
+        // Set up priority spinner
+        ArrayAdapter<CharSequence> priorityAdapter = ArrayAdapter.createFromResource(this,
+                R.array.priority_levels, android.R.layout.simple_spinner_item);
+        priorityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerPriority.setAdapter(priorityAdapter);
+
+        // Set up category spinner
+        todoViewModel.getAllCategories().observe(this, categories -> {
+            List<String> categoryNames = new ArrayList<>();
+            for (Category category : categories) {
+                categoryNames.add(category.getName());
+            }
+            ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_spinner_item, categoryNames);
+            categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerCategory.setAdapter(categoryAdapter);
+        });
+
+        // Set up date pickers
+        editTextDueDateFrom.setOnClickListener(v -> showDatePicker(editTextDueDateFrom));
+        editTextDueDateTo.setOnClickListener(v -> showDatePicker(editTextDueDateTo));
+        editTextReminderTimeFrom.setOnClickListener(v -> showTimePicker(editTextReminderTimeFrom));
+        editTextReminderTimeTo.setOnClickListener(v -> showTimePicker(editTextReminderTimeTo));
+
+        new AlertDialog.Builder(this)
+            .setTitle("Filter Tasks")
+            .setView(dialogView)
+            .setPositiveButton("Apply", (dialog, which) -> {
+                String title = editTextTitle.getText().toString().trim();
+                String description = editTextDescription.getText().toString().trim();
+                Integer priority = null;
+                if (spinnerPriority.getText().length() > 0) {
+                    int pos = priorityAdapter.getPosition(spinnerPriority.getText().toString());
+                    if (pos >= 0) priority = pos + 1; // Assuming 1:Low, 2:Med, 3:High
+                }
+                Long dueDateFrom = parseDate(editTextDueDateFrom.getText().toString().trim());
+                Long dueDateTo = parseDate(editTextDueDateTo.getText().toString().trim());
+                Boolean hasReminder = checkBoxHasReminder.isChecked() ? true : null;
+                Long reminderTimeFrom = parseTime(editTextReminderTimeFrom.getText().toString().trim());
+                Long reminderTimeTo = parseTime(editTextReminderTimeTo.getText().toString().trim());
+                String categoryName = spinnerCategory.getText().toString().trim();
+                if (categoryName.isEmpty()) categoryName = null;
+                if (title.isEmpty()) title = null;
+                if (description.isEmpty()) description = null;
+                todoViewModel.filterTodos(title, description, priority, dueDateFrom, dueDateTo, hasReminder, reminderTimeFrom, reminderTimeTo, categoryName);
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+    }
+
+    private void showDatePicker(EditText editText) {
+        Calendar calendar = Calendar.getInstance();
+        new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            calendar.set(year, month, dayOfMonth);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            editText.setText(sdf.format(calendar.getTime()));
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void showTimePicker(EditText editText) {
+        Calendar calendar = Calendar.getInstance();
+        new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            editText.setText(sdf.format(calendar.getTime()));
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+    }
+
+    private Long parseDate(String dateStr) {
+        if (dateStr.isEmpty()) return null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            return sdf.parse(dateStr).getTime();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Long parseTime(String timeStr) {
+        if (timeStr.isEmpty()) return null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(sdf.parse(timeStr));
+            return cal.getTimeInMillis();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -141,7 +142,7 @@ public class EditTodoActivity extends AppCompatActivity {
                 selectedCategories.addAll(todoWithCategories.getCategories());
                 chipGroupCategories.removeAllViews();
                 for (Category category : selectedCategories) {
-                    addCategoryChip(category.getName());
+                    addCategoryChip(category.getName(), false);
                 }
             }
         });
@@ -161,7 +162,7 @@ public class EditTodoActivity extends AppCompatActivity {
         // Set up category selection
         spinnerCategories.setOnItemClickListener((parent, view, position, id) -> {
             String categoryName = parent.getItemAtPosition(position).toString();
-            addCategoryChip(categoryName);
+            addCategoryChip(categoryName, true);
             spinnerCategories.setText(""); // Clear the text after selection
         });
 
@@ -199,7 +200,7 @@ public class EditTodoActivity extends AppCompatActivity {
         timePickerDialog.show();
     }
 
-    private void addCategoryChip(String categoryName) {
+    private void addCategoryChip(String categoryName, boolean addToList) {
         // Check if category is already added
         for (int i = 0; i < chipGroupCategories.getChildCount(); i++) {
             Chip chip = (Chip) chipGroupCategories.getChildAt(i);
@@ -214,12 +215,20 @@ public class EditTodoActivity extends AppCompatActivity {
         chip.setCloseIconVisible(true);
         chip.setOnCloseIconClickListener(v -> {
             chipGroupCategories.removeView(chip);
-            selectedCategories.removeIf(category -> category.getName().equals(categoryName));
+            Iterator<Category> iterator = selectedCategories.iterator();
+            while (iterator.hasNext()) {
+                Category c = iterator.next();
+                if (c.getName().equals(categoryName)) {
+                    iterator.remove();
+                }
+            }
         });
 
-        // Add category to selected categories
-        Category category = new Category(categoryName);
-        selectedCategories.add(category);
+        // Add category to selected categories if needed
+        if (addToList) {
+            Category category = new Category(categoryName);
+            selectedCategories.add(category);
+        }
 
         chipGroupCategories.addView(chip);
     }

@@ -8,6 +8,8 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
+import androidx.sqlite.db.SupportSQLiteQuery;
+import androidx.room.RawQuery;
 
 import com.example.todoappv2.model.Category;
 import com.example.todoappv2.model.Todo;
@@ -69,4 +71,10 @@ public interface TodoDao {
     @Transaction
     @Query("SELECT * FROM todos WHERE id = :id")
     LiveData<TodoWithCategories> getTodoWithCategories(int id);
+
+    @RawQuery(observedEntities = Todo.class)
+    LiveData<List<Todo>> filterTodos(SupportSQLiteQuery query);
+
+    @RawQuery(observedEntities = {Todo.class, TodoCategoryCrossRef.class, Category.class})
+    LiveData<List<TodoWithCategories>> filterTodosWithCategories(SupportSQLiteQuery query);
 } 
