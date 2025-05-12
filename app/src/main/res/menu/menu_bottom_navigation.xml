@@ -16,4 +16,9 @@
         android:id="@+id/navigation_categories"
         android:icon="@drawable/ic_category"
         android:title="@string/manage_categories" />
+
+    <item
+        android:id="@+id/navigation_focus"
+        android:icon="@android:drawable/ic_lock_silent_mode_off"
+        android:title="@string/navigation_focus"/>
 </menu> 

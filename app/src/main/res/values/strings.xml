@@ -51,6 +51,7 @@
     <string name="all_todos">All</string>
     <string name="active_todos">Active</string>
     <string name="completed_todos">Completed</string>
+    <string name="navigation_focus">Focus</string>
 
     <string-array name="priority_levels">
         <item>Low</item>
@@ -66,4 +67,14 @@
         <item>Education</item>
         <item>Other</item>
     </string-array>
+
+    <string name="focus_mode">Focus Mode</string>
+    <string name="start_focusing">Start Focusing</string>
+    <string name="stop_focusing">Stop Focusing</string>
+    <string name="focus_input_hint">Enter minutes</string>
+    <string name="focus_info">While your focus mode is on, all of your notifications will be off</string>
+    <string name="overview">Overview</string>
+    <string name="applications">Applications</string>
+    <string name="focus_complete">Focus session complete!</string>
+    <string name="focus_enter_minutes">Please enter minutes</string>
 </resources>

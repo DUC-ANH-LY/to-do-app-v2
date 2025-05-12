@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -69,7 +70,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, CategoryManagementActivity.class));
                 return false; // Don't change the selected item
             }
-            
+            if (itemId == R.id.navigation_focus) {
+                startActivity(new Intent(MainActivity.this, FocusActivity.class));
+                return false; // Don't change the selected item
+            }
             currentFilter = itemId;
             filterTodos();
             return true;

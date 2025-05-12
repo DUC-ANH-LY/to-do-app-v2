@@ -55,4 +55,34 @@ public class Todo {
     
     public Date getReminderTime() { return reminderTime; }
     public void setReminderTime(Date reminderTime) { this.reminderTime = reminderTime; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Todo todo = (Todo) o;
+        return id == todo.id &&
+                isCompleted == todo.isCompleted &&
+                priority == todo.priority &&
+                hasReminder == todo.hasReminder &&
+                (title != null ? title.equals(todo.title) : todo.title == null) &&
+                (description != null ? description.equals(todo.description) : todo.description == null) &&
+                (createdAt != null ? createdAt.equals(todo.createdAt) : todo.createdAt == null) &&
+                (dueDate != null ? dueDate.equals(todo.dueDate) : todo.dueDate == null) &&
+                (reminderTime != null ? reminderTime.equals(todo.reminderTime) : todo.reminderTime == null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (isCompleted ? 1 : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (dueDate != null ? dueDate.hashCode() : 0);
+        result = 31 * result + priority;
+        result = 31 * result + (hasReminder ? 1 : 0);
+        result = 31 * result + (reminderTime != null ? reminderTime.hashCode() : 0);
+        return result;
+    }
 } 
