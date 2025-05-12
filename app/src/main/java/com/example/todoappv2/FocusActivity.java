@@ -186,14 +186,19 @@ public class FocusActivity extends AppCompatActivity {
         appInfoMap.put("org.telegram.messenger", new AppInfo("Telegram", android.R.drawable.ic_menu_send));
         appInfoMap.put("com.google.android.gm", new AppInfo("Gmail", android.R.drawable.ic_dialog_email));
         appInfoMap.put("com.google.android.youtube", new AppInfo("YouTube", android.R.drawable.ic_media_play));
+        // Aggregate usage time per app
+        Map<String, Long> usageTimeMap = new HashMap<>();
         for (UsageStats usageStats : stats) {
             String packageName = usageStats.getPackageName();
             if (appInfoMap.containsKey(packageName)) {
                 long totalTime = usageStats.getTotalTimeInForeground();
-                String timeStr = formatMillis(totalTime);
-                AppInfo info = appInfoMap.get(packageName);
-                list.add(new AppUsage(info.name, timeStr, info.iconResId));
+                usageTimeMap.put(packageName, usageTimeMap.getOrDefault(packageName, 0L) + totalTime);
             }
+        }
+        for (Map.Entry<String, Long> entry : usageTimeMap.entrySet()) {
+            AppInfo info = appInfoMap.get(entry.getKey());
+            String timeStr = formatMillis(entry.getValue());
+            list.add(new AppUsage(info.name, timeStr, info.iconResId));
         }
         if (list.isEmpty()) {
             list.add(new AppUsage("No data", "-", android.R.drawable.ic_menu_help));

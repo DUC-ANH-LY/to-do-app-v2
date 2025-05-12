@@ -58,7 +58,17 @@ public class TodoAdapter extends ListAdapter<TodoWithCategories, TodoAdapter.Tod
         holder.textDescription.setText(current.getTodo().getDescription());
         holder.textDueDate.setText(dateFormat.format(current.getTodo().getDueDate()));
         holder.checkBox.setChecked(current.getTodo().isCompleted());
-        
+
+        // Set priority indicator color
+        int priority = current.getTodo().getPriority();
+        int colorRes;
+        switch (priority) {
+            case 3: colorRes = R.color.priority_high; break;
+            case 2: colorRes = R.color.priority_medium; break;
+            default: colorRes = R.color.priority_low; break;
+        }
+        holder.priorityIndicator.setBackgroundResource(colorRes);
+
         // Clear existing chips
         holder.chipGroupCategories.removeAllViews();
 
@@ -98,6 +108,7 @@ public class TodoAdapter extends ListAdapter<TodoWithCategories, TodoAdapter.Tod
         private CheckBox checkBox;
         private ChipGroup chipGroupCategories;
         private ImageButton buttonDelete;
+        private View priorityIndicator;
 
         public TodoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -107,6 +118,7 @@ public class TodoAdapter extends ListAdapter<TodoWithCategories, TodoAdapter.Tod
             checkBox = itemView.findViewById(R.id.checkBox);
             chipGroupCategories = itemView.findViewById(R.id.chip_group_categories);
             buttonDelete = itemView.findViewById(R.id.button_delete);
+            priorityIndicator = itemView.findViewById(R.id.priority_indicator);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
