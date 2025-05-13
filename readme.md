@@ -63,3 +63,45 @@ _Add screenshots here to showcase the UI and features._
 
 ## License
 MIT or specify your license here.
+
+## Project Structure & Architecture
+
+The app follows a clean, modular Android architecture (MVVM) for maintainability and scalability:
+
+```
+app/
+├── src/
+│   └── main/
+│       ├── java/com/example/todoappv2/
+│       │   ├── adapter/         # RecyclerView adapters for tasks and categories
+│       │   ├── dao/             # Room DAOs for database access
+│       │   ├── model/           # Data models (Todo, Category, etc.)
+│       │   ├── repository/      # Data repositories (abstract data sources)
+│       │   ├── util/            # Utilities (reminders, notifications, AI, etc.)
+│       │   ├── viewmodel/       # ViewModels for UI logic and LiveData
+│       │   ├── MainActivity.java, AddTodoActivity.java, ... # Main screens
+│       ├── res/
+│       │   ├── layout/          # XML layouts for activities, dialogs, list items
+│       │   ├── values/          # Colors, strings, styles
+│       └── AndroidManifest.xml
+└── build.gradle.kts
+```
+
+### Key Layers
+- **Activities**: UI screens (task list, add/edit, focus mode, category management)
+- **Adapters**: Bind data to RecyclerViews
+- **Models**: Data classes for Room and app logic
+- **DAOs**: Database queries and relations
+- **Repositories**: Abstract data operations for ViewModels
+- **ViewModels**: Expose LiveData and business logic to the UI
+- **Utilities**: Reminders, notifications, AI/NLP helpers
+- **Resources**: Layouts, colors, strings, styles
+
+### Architecture Pattern
+- **MVVM (Model-View-ViewModel)**
+  - **Model**: Data classes and Room database
+  - **View**: Activities and XML layouts
+  - **ViewModel**: Exposes data to the UI, handles business logic
+  - **Repository**: Mediates between ViewModel and data sources (Room, network, etc.)
+
+This structure ensures separation of concerns, easy feature expansion, and maintainable code.
